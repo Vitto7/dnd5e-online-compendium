@@ -1,0 +1,123 @@
+<div class="wrapper d-flex flex-row w-100">
+  <div class="filter-section vh-100 w-50 d-flex flex-column ps-3 pe-3">
+    <h2>Bestiary</h2>
+    <span class="mt-2 ms-2 me-2">Challenge Rating</span>
+    <div class="filter-options cr-options d-flex flex-wrap m-2">
+      <ng-container *ngFor="let item of challengeRatings" class="d-flex">
+        <button
+          (click)="selectCRFilter(item.cr)"
+          class="btn m-1"
+          [ngClass]="
+            !selectedCRs.includes(item.cr)
+              ? 'btn-outline-dark'
+              : 'btn-secondary'
+          "
+        >
+          {{ item.category }}
+        </button>
+      </ng-container>
+    </div>
+
+    <button
+      (click)="searchMonsters()"
+      class="btn btn-primary m-2 align-self-start"
+    >
+      Search Monsters
+    </button>
+
+    <div
+      class="monster-list overflow-auto d-flex flex-column mb-3 h-100 rounded-1 p-1 text-white"
+    >
+      <div
+        *ngIf="!monsters.length"
+        class="h-100 d-flex flex-column justify-content-center align-items-center p-3"
+      >
+        <span>We haven't found any monsters matching your filters!</span>
+      </div>
+      <div class="list-group list-group-flush" *ngFor="let item of monsters">
+        <button
+          class="selectable-monster list-group-item list-group-item-action text-white"
+          [ngClass]="{ active: selectedMonster?.index === item.index }"
+          (click)="showMonsterDetails(item.index)"
+        >
+          {{ item.name }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="result-section w-50 ps-3 pe-3">
+    <div
+      *ngIf="!selectedMonster?.name"
+      class="d-flex flex-column justify-content-center align-items-center text-center h-100"
+    >
+      <span
+        >Search and select a monster from the list of monsters in the left
+        page</span
+      >
+      <span>All important information regarding the selected monster</span>
+      <span>will be displayed in this page.</span>
+    </div>
+    <ng-container *ngIf="!!selectedMonster?.name">
+      <div class="monster-info d-flex justify-content-between">
+        <div class="d-flex flex-column">
+          <h2>{{ selectedMonster.name }}</h2>
+          <h6>Challenge Rating {{ selectedMonster.challenge_rating }}</h6>
+          <h6><strong>Hit Points:</strong> {{ selectedMonster.hit_points }}</h6>
+          <h6 class="text-capitalize">
+            <strong>Armor Class:</strong>
+            <ng-container
+              *ngFor="let item of selectedMonster?.armor_class; index as i"
+            >
+              {{ item?.value }} ({{ item?.type }}){{
+                i + 1 === selectedMonster?.armor_class.length ? "" : ","
+              }}
+            </ng-container>
+          </h6>
+          <h6 class="text-capitalize">
+            <strong>Type:</strong> {{ selectedMonster.type }}
+          </h6>
+          <h6 class="text-capitalize">
+            <strong>Size:</strong> {{ selectedMonster.size }}
+          </h6>
+          <h6 class="text-capitalize">
+            <strong>Alignment:</strong> {{ selectedMonster.alignment }}
+          </h6>
+        </div>
+        <img
+          class="monster-portrait"
+          *ngIf="!!selectedMonster?.image?.length"
+          src="https://www.dnd5eapi.co{{ selectedMonster?.image }}"
+          alt="{{ selectedMonster?.image }}"
+        />
+      </div>
+      <p class="mt-2 w-100 text-center">
+        <strong>STR</strong> {{ selectedMonster.strength }} ({{
+          getAttributeModifier(selectedMonster.strength)
+        }}) <strong class="ms-1">DEX</strong>
+        {{ selectedMonster.dexterity }} ({{
+          getAttributeModifier(selectedMonster.dexterity)
+        }}) <strong class="ms-1">CON</strong>
+        {{ selectedMonster.constitution }} ({{
+          getAttributeModifier(selectedMonster.constitution)
+        }}) <strong class="ms-1">INT</strong>
+        {{ selectedMonster.intelligence }} ({{
+          getAttributeModifier(selectedMonster.intelligence)
+        }}) <strong class="ms-1">WIS</strong> {{ selectedMonster.wisdom }} ({{
+          getAttributeModifier(selectedMonster.wisdom)
+        }}) <strong class="ms-1">CHA</strong> {{ selectedMonster.charisma }} ({{
+          getAttributeModifier(selectedMonster.charisma)
+        }})
+      </p>
+
+      <p class="desc-text">{{ selectedMonster.desc }}</p>
+
+      <ng-container *ngIf="!!selectedMonster?.special_abilities?.length">
+        <h6>Special Abilities</h6>
+        <ng-container *ngFor="let item of selectedMonster.special_abilities">
+          <span class="desc-text"><strong>Name:</strong> {{ item.name }}</span>
+          <p class="desc-text">{{ item.desc }}</p>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

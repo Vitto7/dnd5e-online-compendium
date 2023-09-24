@@ -1,0 +1,207 @@
+<div class="wrapper d-flex flex-row w-100">
+  <div class="filter-section vh-100 w-50 d-flex flex-column ps-3 pe-3">
+    <h2>Spellbook</h2>
+
+    <span class="mt-2 ms-2 me-2">Spell Level</span>
+    <div class="filter-options level-options d-flex flex-wrap m-2">
+      <ng-container *ngFor="let item of levels" class="d-flex">
+        <button
+          (click)="selectLevelFilter(item.level)"
+          class="btn m-1"
+          [ngClass]="
+            !selectedLevels.includes(item.level)
+              ? 'btn-outline-dark'
+              : 'btn-secondary'
+          "
+        >
+          {{ item.text }}
+        </button>
+      </ng-container>
+    </div>
+
+    <span class="mt-2 ms-2 me-2">Spell School</span>
+    <div class="filter-options school-options d-flex flex-wrap m-2">
+      <ng-container *ngFor="let item of schools" class="d-flex">
+        <button
+          (click)="selectSchoolFilter(item)"
+          class="btn m-1"
+          [ngClass]="
+            !selectedSchools.includes(item)
+              ? 'btn-outline-dark'
+              : 'btn-secondary'
+          "
+        >
+          {{ item }}
+        </button>
+      </ng-container>
+    </div>
+
+    <button
+      (click)="searchSpells()"
+      class="btn btn-primary m-2 align-self-start"
+    >
+      Search Spells
+    </button>
+
+    <div
+      class="spell-list overflow-auto d-flex flex-column mb-3 h-100 rounded-1 p-1 text-white"
+    >
+      <div
+        *ngIf="!spells.length"
+        class="h-100 d-flex flex-column justify-content-center align-items-center p-3"
+      >
+        <span>We haven't found any spells matching your filters!</span>
+      </div>
+      <div class="list-group list-group-flush" *ngFor="let item of spells">
+        <button
+          class="selectable-spell list-group-item list-group-item-action text-white"
+          [ngClass]="{ active: selectedSpell?.index === item.index }"
+          (click)="showSpellDetails(item.index)"
+        >
+          {{ item.name }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section w-50 ps-3 pe-3">
+    <div
+      *ngIf="!selectedSpell?.name"
+      class="d-flex flex-column justify-content-center align-items-center text-center h-100"
+    >
+      <span
+        >Search and select a spell from the list of spells in the left
+        page</span
+      >
+      <span>All important information regarding the selected spell</span>
+      <span>will be displayed in this page.</span>
+    </div>
+    <ng-container *ngIf="!!selectedSpell?.name">
+      <h2>{{ selectedSpell.name }}</h2>
+      <h5>
+        Level {{ selectedSpell.level }} {{ selectedSpell.school.name }} Spell
+      </h5>
+
+      <ng-container *ngIf="selectedSpell?.damage">
+        <div
+          class="damage-type"
+          [ngClass]="{
+            acid: selectedSpell.damage.damage_type.index === 'acid',
+            bludgeoning:
+              selectedSpell.damage.damage_type.index === 'bludgeoning',
+            cold: selectedSpell.damage.damage_type.index === 'cold',
+            fire: selectedSpell.damage.damage_type.index === 'fire',
+            force: selectedSpell.damage.damage_type.index === 'force',
+            lightning: selectedSpell.damage.damage_type.index === 'lightning',
+            necrotic: selectedSpell.damage.damage_type.index === 'necrotic',
+            piercing: selectedSpell.damage.damage_type.index === 'piercing',
+            poison: selectedSpell.damage.damage_type.index === 'poison',
+            psychic: selectedSpell.damage.damage_type.index === 'psychic',
+            radiant: selectedSpell.damage.damage_type.index === 'radiant',
+            slashing: selectedSpell.damage.damage_type.index === 'slashing',
+            thunder: selectedSpell.damage.damage_type.index === 'thunder'
+          }"
+        >
+          <h5 *ngIf="selectedSpell.level === 0">
+            {{ selectedSpell.damage?.damage_at_character_level["1"] }}
+            {{ selectedSpell.damage?.damage_type.name }} Damage
+          </h5>
+          <h5 *ngIf="selectedSpell.level > 0">
+            {{
+              selectedSpell.damage?.damage_at_slot_level[selectedSpell.level]
+            }}
+            {{ selectedSpell.damage?.damage_type.name }} Damage
+          </h5>
+        </div>
+      </ng-container>
+
+      <p class="desc-text">
+        <strong>Components:</strong> {{ selectedSpell.components.join(", ") }}.
+        <span *ngIf="selectedSpell?.material"
+          ><strong>Material:</strong> {{ selectedSpell.material }}
+        </span>
+      </p>
+
+      <p class="desc-text">{{ selectedSpell.desc }}</p>
+
+      <p
+        class="desc-text"
+        *ngIf="selectedSpell?.higher_level.length && selectedSpell.level > 0"
+      >
+        <strong>On Higher Levels: </strong> {{ selectedSpell.higher_level }}
+      </p>
+
+      <p class="desc-text">
+        <span
+          *ngIf="selectedSpell.concentration"
+          class="d-flex align-items-center"
+          ><svg
+            class="me-1"
+            width="20px"
+            height="20px"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M2.42012 12.7132C2.28394 12.4975 2.21584 12.3897 2.17772 12.2234C2.14909 12.0985 2.14909 11.9015 2.17772 11.7766C2.21584 11.6103 2.28394 11.5025 2.42012 11.2868C3.54553 9.50484 6.8954 5 12.0004 5C17.1054 5 20.4553 9.50484 21.5807 11.2868C21.7169 11.5025 21.785 11.6103 21.8231 11.7766C21.8517 11.9015 21.8517 12.0985 21.8231 12.2234C21.785 12.3897 21.7169 12.4975 21.5807 12.7132C20.4553 14.4952 17.1054 19 12.0004 19C6.8954 19 3.54553 14.4952 2.42012 12.7132Z"
+              stroke="#000000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M12.0004 15C13.6573 15 15.0004 13.6569 15.0004 12C15.0004 10.3431 13.6573 9 12.0004 9C10.3435 9 9.0004 10.3431 9.0004 12C9.0004 13.6569 10.3435 15 12.0004 15Z"
+              stroke="#000000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Need Concentration
+        </span>
+        <span *ngIf="selectedSpell.ritual" class="d-flex align-items-center"
+          ><svg
+            class="me-1"
+            height="20px"
+            width="20px"
+            version="1.1"
+            id="Capa_1"
+            viewBox="0 0 42.532 42.532"
+            xml:space="preserve"
+          >
+            <g>
+              <path
+                style="fill: #010002"
+                d="M41.856,15.918c-4.914,0-9.828,0-14.744,0c-0.159,0-0.318,0-0.478,0
+                           c-1.464-4.502-2.926-9.006-4.389-13.509c-0.091-0.279-0.182-0.56-0.273-0.84c-0.018-0.23-0.165-0.396-0.358-0.492
+                           c-0.03-0.016-0.059-0.03-0.091-0.042c-0.041-0.014-0.082-0.022-0.125-0.03c-0.045-0.008-0.087-0.015-0.132-0.014
+                           c-0.045,0-0.088,0.006-0.132,0.014c-0.043,0.007-0.084,0.016-0.125,0.03c-0.032,0.011-0.061,0.025-0.09,0.042
+                           c-0.193,0.096-0.341,0.262-0.359,0.492c-1.508,4.641-3.016,9.284-4.524,13.925c-0.046,0.141-0.092,0.283-0.138,0.424
+                           c-4.746,0-9.49,0-14.236,0c-0.329,0-0.657,0-0.986,0c-0.746,0-0.89,0.915-0.354,1.305C4.298,20.112,8.274,23,12.25,25.889
+                           c0.11,0.08,0.22,0.16,0.331,0.24c-1.47,4.525-2.94,9.049-4.411,13.572c-0.102,0.312-0.203,0.625-0.305,0.938
+                           c-0.181,0.556,0.526,1.155,1.028,0.791c3.976-2.889,7.952-5.776,11.929-8.666c0.148-0.107,0.296-0.215,0.445-0.323
+                           c3.858,2.804,7.716,5.606,11.575,8.409c0.267,0.193,0.532,0.388,0.798,0.58c0.502,0.364,1.209-0.235,1.028-0.791
+                           c-1.519-4.674-3.037-9.348-4.558-14.021c-0.052-0.162-0.105-0.324-0.158-0.486c3.82-2.776,7.64-5.551,11.461-8.328
+                           c0.266-0.193,0.531-0.386,0.798-0.58C42.746,16.833,42.604,15.918,41.856,15.918z M39.706,17.318
+                           c-3.376,2.454-6.753,4.907-10.132,7.361c-0.025,0.019-0.052,0.038-0.077,0.057c-0.804-2.473-1.607-4.945-2.411-7.418
+                           C31.293,17.318,35.5,17.318,39.706,17.318z M13.768,26.994c2.104,1.528,4.208,3.057,6.311,4.586
+                           c-3.404,2.473-6.808,4.944-10.212,7.418C11.167,34.996,12.468,30.995,13.768,26.994z M21.265,30.718
+                           c-2.349-1.706-4.697-3.412-7.044-5.118c0.898-2.761,1.794-5.521,2.692-8.281c2.901,0,5.802,0,8.704,0
+                           c0.898,2.76,1.795,5.52,2.692,8.281C25.961,27.305,23.613,29.012,21.265,30.718z M25.147,15.866
+                           c0.006,0.017,0.012,0.035,0.017,0.052c-2.598,0-5.196,0-7.795,0c1.298-3.999,2.598-7.998,3.897-11.996
+                           C22.559,7.903,23.853,11.885,25.147,15.866z M2.824,17.318c4.198,0,8.396,0,12.595,0c0.007,0,0.015,0,0.022,0
+                           c-0.804,2.472-1.607,4.944-2.41,7.416C9.628,22.262,6.226,19.79,2.824,17.318z M32.663,38.999
+                           c-3.404-2.475-6.808-4.947-10.213-7.421c2.104-1.528,4.207-3.057,6.312-4.586C30.063,30.994,31.362,34.997,32.663,38.999z"
+              />
+            </g>
+          </svg>
+          Ritual Spell</span
+        >
+        <span>
+          <strong>Range: </strong> {{ selectedSpell.range }}.
+          <strong>Casting Time: </strong> {{ selectedSpell.casting_time }}.
+        </span>
+      </p>
+    </ng-container>
+  </div>
+</div>

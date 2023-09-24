@@ -1,0 +1,14 @@
+.screen-content {
+    background: rgb(182,114,114);
+    background: radial-gradient(circle, rgba(182,114,114,1) 0%, rgba(29,0,0,1) 100%);
+    display: flex;
+    align-items: center;
+
+    .custom-container {
+        width: 1320px;
+        background-image: url(../assets/book-background.jpg);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+}
