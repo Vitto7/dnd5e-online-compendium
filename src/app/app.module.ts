@@ -9,6 +9,8 @@ import { Dnd5eApiService } from './services/dnd5e-api.service';
 import { HeaderComponent } from './components/header/header.component';
 import { HomeComponent } from './pages/home/home.component';
 import { BestiaryComponent } from './pages/bestiary/bestiary.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -16,15 +18,16 @@ import { BestiaryComponent } from './pages/bestiary/bestiary.component';
     SpellListComponent,
     HeaderComponent,
     HomeComponent,
-    BestiaryComponent
+    BestiaryComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
-    
+    HttpClientModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({}),
   ],
   providers: [Dnd5eApiService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

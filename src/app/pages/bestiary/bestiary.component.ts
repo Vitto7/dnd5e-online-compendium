@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { Dnd5eApiService } from 'src/app/services/dnd5e-api.service';
 
 @Component({
@@ -33,7 +34,10 @@ export class BestiaryComponent implements OnInit {
 
   public selectedMonster: any;
 
-  constructor(private service: Dnd5eApiService) {}
+  constructor(
+    private service: Dnd5eApiService,
+    private toastr: ToastrService
+  ) {}
 
   public getAttributeModifier = (value: number): string => {
     const modifierValues: any = { 0: '-5', 1: '-4', 2: '-3', 3: '-2', 4: '-1' };
@@ -69,22 +73,25 @@ export class BestiaryComponent implements OnInit {
       ...filterCRLevels,
     ].join('&')}`;
 
-    this.service
-      .getMonsters(filterString)
-      .subscribe((data) => (this.monsters = data.results));
+    this.service.getMonsters(filterString).subscribe(
+      (data) => (this.monsters = data.results),
+      (err) => this.toastr.error(err.message)
+    );
   };
 
   public showMonsterDetails = (index: string): void => {
     const monsterString = `/${index}`;
 
-    this.service
-      .getMonsters(monsterString)
-      .subscribe((data) => (this.selectedMonster = data));
+    this.service.getMonsters(monsterString).subscribe(
+      (data) => (this.selectedMonster = data),
+      (err) => this.toastr.error(err.message)
+    );
   };
 
   ngOnInit(): void {
-    this.service
-      .getMonsters('')
-      .subscribe((data) => (this.monsters = data.results));
+    this.service.getMonsters('').subscribe(
+      (data) => (this.monsters = data.results),
+      (err) => this.toastr.error(err.message)
+    );
   }
 }

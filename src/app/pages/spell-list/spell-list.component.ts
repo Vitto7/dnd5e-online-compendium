@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { Dnd5eApiService } from 'src/app/services/dnd5e-api.service';
 
 @Component({
@@ -36,7 +37,10 @@ export class SpellListComponent implements OnInit {
 
   public selectedSpell: any;
 
-  constructor(private service: Dnd5eApiService) {}
+  constructor(
+    private service: Dnd5eApiService,
+    private toastr: ToastrService
+  ) {}
 
   public selectLevelFilter = (selectedLevel: number): void => {
     if (this.selectedLevels.some((item) => item === selectedLevel)) {
@@ -64,22 +68,25 @@ export class SpellListComponent implements OnInit {
       ...filterSchools,
     ].join('&')}`;
 
-    this.service
-      .getSpells(filterString)
-      .subscribe((data) => (this.spells = data.results));
+    this.service.getSpells(filterString).subscribe(
+      (data) => (this.spells = data.results),
+      (err) => this.toastr.error(err.message)
+    );
   };
 
   public showSpellDetails = (index: string): void => {
     const spellString = `/${index}`;
 
-    this.service
-      .getSpells(spellString)
-      .subscribe((data) => (this.selectedSpell = data));
+    this.service.getSpells(spellString).subscribe(
+      (data) => (this.selectedSpell = data),
+      (err) => this.toastr.error(err.message)
+    );
   };
 
   ngOnInit(): void {
-    this.service
-      .getSpells('')
-      .subscribe((data) => (this.spells = data.results));
+    this.service.getSpells('').subscribe(
+      (data) => (this.spells = data.results),
+      (err) => this.toastr.error(err.message)
+    );
   }
 }
